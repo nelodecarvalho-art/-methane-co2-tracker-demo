@@ -1,0 +1,15 @@
+# Segredos — nunca versionar
+.env
+frontend/.env
+
+# Python
+__pycache__/
+*.pyc
+backend/**/__pycache__/
+
+# Node / frontend build
+frontend/node_modules/
+frontend/dist/
+
+# Editor/OS
+.DS_Store

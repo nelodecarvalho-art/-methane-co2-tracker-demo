@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+
+  mailpit:
+    # Servidor SMTP de desenvolvimento: captura e-mails sem enviar de
+    # verdade, com API HTTP pra inspecionar o que foi "enviado" (usada nos
+    # testes de notificação de alerta). Não é o SMTP de produção.
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  backend:
+    build: ./backend
+    env_file:
+      - .env
+    depends_on:
+      - timescaledb
+      - mosquitto
+      - mailpit
+    ports:
+      - "8000:8000"
+
+volumes:
+  timescale_data:
