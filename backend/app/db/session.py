@@ -53,12 +53,18 @@ class Settings(BaseSettings):
     def alert_thresholds_ppm(self) -> dict[str, float]:
         return {"CH4": self.alert_threshold_ppm_ch4, "CO2": self.alert_threshold_ppm_co2}
 
+    # Parâmetros extras de conexão (ex: "sslmode=require&channel_binding=require"
+    # exigidos por hosts gerenciados como Neon). Vazio = nenhum, comportamento
+    # local/docker-compose inalterado.
+    db_extra_query: str = ""
+
     @property
     def database_url(self) -> str:
-        return (
+        base = (
             f"postgresql+psycopg2://{self.db_user}:{self.db_password}"
             f"@{self.db_host}:{self.db_port}/{self.db_name}"
         )
+        return f"{base}?{self.db_extra_query}" if self.db_extra_query else base
 
 
 settings = Settings()
