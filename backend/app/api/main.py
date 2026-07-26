@@ -5,7 +5,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from app.api.rate_limit import limiter
-from app.api.routers import alerts, auth, devices, readings, reports
+from app.api.routers import alerts, auth, devices, health, readings, reports
 from app.db.session import settings
 
 app = FastAPI(
@@ -35,6 +35,7 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(readings.router)
 app.include_router(devices.router)

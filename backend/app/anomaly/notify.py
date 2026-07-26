@@ -38,6 +38,10 @@ def send_email_anomaly(reading: Reading) -> None:
     msg.set_content(_body(reading))
 
     with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=5) as smtp:
+        if settings.smtp_use_tls:
+            smtp.starttls()
+        if settings.smtp_user:
+            smtp.login(settings.smtp_user, settings.smtp_password)
         smtp.send_message(msg)
 
 

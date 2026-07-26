@@ -31,6 +31,10 @@ def send_email_alert(alert: Alert) -> None:
     msg.set_content(_body(alert))
 
     with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=5) as smtp:
+        if settings.smtp_use_tls:
+            smtp.starttls()
+        if settings.smtp_user:
+            smtp.login(settings.smtp_user, settings.smtp_password)
         smtp.send_message(msg)
 
 

@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     mqtt_broker_host: str = "localhost"
     mqtt_broker_port: int = 1883
     mqtt_topic_pattern: str = "sensors/+/readings"
+    mqtt_username: str = ""
+    mqtt_password: str = ""
+    mqtt_use_tls: bool = False
 
     alert_window_seconds: int = 120
     alert_threshold_ppm_ch4: float = 500.0
@@ -26,6 +29,9 @@ class Settings(BaseSettings):
 
     smtp_host: str = "localhost"
     smtp_port: int = 1025
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_use_tls: bool = False
     alert_email_from: str = "alerts@methane-co2-tracker.local"
     alert_email_to: str = "oncall@methane-co2-tracker.local"
     alert_webhook_url: str = ""

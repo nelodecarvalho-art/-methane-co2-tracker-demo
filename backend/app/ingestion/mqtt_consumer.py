@@ -78,7 +78,14 @@ def _on_message(client: mqtt.Client, userdata, message: mqtt.MQTTMessage) -> Non
 
 
 def build_client() -> mqtt.Client:
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    client = mqtt.Client(
+        mqtt.CallbackAPIVersion.VERSION2,
+        client_id="methane-co2-tracker-consumer",
+    )
+    if settings.mqtt_username:
+        client.username_pw_set(settings.mqtt_username, settings.mqtt_password)
+    if settings.mqtt_use_tls:
+        client.tls_set()
     client.on_connect = _on_connect
     client.on_disconnect = _on_disconnect
     client.on_message = _on_message
