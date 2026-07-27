@@ -1,24 +1,18 @@
-fastapi==0.111.*
-uvicorn[standard]==0.30.*
-paho-mqtt==2.*
-sqlalchemy==2.*
-psycopg2-binary==2.*
-alembic==1.*
-pydantic==2.*
-pydantic-settings==2.*
-python-dotenv==1.*
-scikit-learn==1.*
-pandas==2.*
-numpy==1.*
-reportlab==4.*
-protobuf==5.*
-httpx==0.27.*
-bcrypt==4.*
-pyjwt==2.*
-slowapi==0.1.*
-
-# dev-only: usado apenas para regenerar backend/app/ingestion/generated/
-# sensor_reading_pb2.py a partir de proto/sensor_reading.proto quando o
-# .proto mudar (python -m grpc_tools.protoc ...). Não é dependência de
-# runtime do serviço de ingestão.
-grpcio-tools==1.*
+fastapi==0.111.1
+uvicorn[standard]==0.30.6
+paho-mqtt==2.1.0
+sqlalchemy==2.0.51
+psycopg2-binary==2.9.12
+alembic==1.18.5
+pydantic==2.13.4
+pydantic-settings==2.14.2
+python-dotenv==1.2.2
+scikit-learn==1.9.0
+pandas==2.3.3
+numpy==1.26.4
+reportlab==4.5.1
+protobuf==5.29.6
+httpx==0.27.2
+bcrypt==4.3.0
+pyjwt==2.13.0
+slowapi==0.1.10

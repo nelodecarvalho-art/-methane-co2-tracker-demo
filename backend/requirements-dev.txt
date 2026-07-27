@@ -1,0 +1,6 @@
+# dev-only: usado apenas para regenerar backend/app/ingestion/generated/
+# sensor_reading_pb2.py a partir de proto/sensor_reading.proto quando o
+# .proto mudar (python -m grpc_tools.protoc ...). Não é dependência de
+# runtime do serviço de ingestão — não instalar em produção.
+# Instale à parte: pip install -r requirements-dev.txt
+grpcio-tools==1.83.0
