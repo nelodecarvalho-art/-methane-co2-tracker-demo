@@ -1,3 +1,37 @@
+envVarGroups:
+  - name: methane-shared-config
+    envVars:
+      - key: MQTT_BROKER_PORT
+        value: 8883
+      - key: MQTT_TOPIC_PATTERN
+        value: sensors/+/readings
+      - key: MQTT_USE_TLS
+        value: true
+      - key: ALERT_WINDOW_SECONDS
+        value: 120
+      - key: ALERT_THRESHOLD_PPM_CH4
+        value: 500
+      - key: ALERT_THRESHOLD_PPM_CO2
+        value: 5000
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 480
+      - key: SMTP_HOST
+        value: smtp.resend.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USE_TLS
+        value: true
+      - key: ALERT_EMAIL_FROM
+        value: onboarding@resend.dev
+      - key: ANOMALY_MIN_HISTORY
+        value: 50
+      - key: ANOMALY_HISTORY_LIMIT
+        value: 500
+      - key: ANOMALY_CONTAMINATION
+        value: 0.02
+
 services:
   - type: web
     name: methane-co2-tracker-api
@@ -9,6 +43,7 @@ services:
     startCommand: alembic upgrade head && uvicorn app.api.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      - fromGroup: methane-shared-config
       - key: DB_USER
         sync: false
       - key: DB_PASSWORD
@@ -23,51 +58,62 @@ services:
         sync: false
       - key: MQTT_BROKER_HOST
         sync: false
-      - key: MQTT_BROKER_PORT
-        value: 8883
-      - key: MQTT_TOPIC_PATTERN
-        value: sensors/+/readings
       - key: MQTT_USERNAME
         sync: false
       - key: MQTT_PASSWORD
         sync: false
-      - key: MQTT_USE_TLS
-        value: true
-      - key: ALERT_WINDOW_SECONDS
-        value: 120
-      - key: ALERT_THRESHOLD_PPM_CH4
-        value: 500
-      - key: ALERT_THRESHOLD_PPM_CO2
-        value: 5000
       - key: JWT_SECRET_KEY
         sync: false
-      - key: JWT_ALGORITHM
-        value: HS256
-      - key: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
-        value: 480
-      - key: SMTP_HOST
-        value: smtp.resend.com
-      - key: SMTP_PORT
-        value: 587
       - key: SMTP_USER
         sync: false
       - key: SMTP_PASSWORD
         sync: false
-      - key: SMTP_USE_TLS
-        value: true
-      - key: ALERT_EMAIL_FROM
-        value: onboarding@resend.dev
       - key: ALERT_EMAIL_TO
         sync: false
       - key: ALERT_WEBHOOK_URL
         sync: false
-      - key: ANOMALY_MIN_HISTORY
-        value: 50
-      - key: ANOMALY_HISTORY_LIMIT
-        value: 500
-      - key: ANOMALY_CONTAMINATION
-        value: 0.02
       - key: ANOMALY_WEBHOOK_URL
         sync: false
       - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+  - type: worker
+    name: methane-co2-tracker-mqtt-consumer
+    env: python
+    region: oregon
+    plan: starter
+    rootDir: backend
+    buildCommand: pip install --prefer-binary --no-cache-dir -r requirements.txt
+    startCommand: python -m app.ingestion.mqtt_consumer
+    envVars:
+      - fromGroup: methane-shared-config
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_EXTRA_QUERY
+        sync: false
+      - key: MQTT_BROKER_HOST
+        sync: false
+      - key: MQTT_USERNAME
+        sync: false
+      - key: MQTT_PASSWORD
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: ALERT_EMAIL_TO
+        sync: false
+      - key: ALERT_WEBHOOK_URL
+        sync: false
+      - key: ANOMALY_WEBHOOK_URL
         sync: false
