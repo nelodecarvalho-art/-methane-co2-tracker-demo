@@ -1,7 +1,12 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Literal
 
 from pydantic import BaseModel, field_validator
+
+# Sensores e o processo consumer não têm relógios perfeitamente
+# sincronizados (NTP drift, container recém-acordado etc.) — uma pequena
+# folga evita descartar leituras válidas só por causa disso.
+FUTURE_TOLERANCE = timedelta(minutes=5)
 
 
 class ReadingIn(BaseModel):
@@ -34,6 +39,6 @@ class ReadingIn(BaseModel):
         # Guarda contra timestamp=0 ou relógio de sensor sem sync (RTC
         # zerado é uma falha comum de campo, não deve virar leitura de 1970).
         now = datetime.now(timezone.utc)
-        if v.year < 2020 or v > now:
+        if v.year < 2020 or v > now + FUTURE_TOLERANCE:
             raise ValueError(f"timestamp implausível: {v.isoformat()}")
         return v
