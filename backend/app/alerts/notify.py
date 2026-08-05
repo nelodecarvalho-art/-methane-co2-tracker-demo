@@ -30,7 +30,7 @@ def send_email_alert(alert: Alert) -> None:
     msg["To"] = settings.alert_email_to
     msg.set_content(_body(alert))
 
-    with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=5) as smtp:
+    with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as smtp:
         if settings.smtp_use_tls:
             smtp.starttls()
         if settings.smtp_user:
