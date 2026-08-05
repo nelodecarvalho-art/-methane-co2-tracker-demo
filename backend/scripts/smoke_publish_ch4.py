@@ -11,10 +11,11 @@ dashboard/API/e-mail depois que o script terminar. O sensor sintético
 fica claramente identificado (sensor_id="smoke-test-ch4",
 name="[SMOKE TEST] ...") pra não ser confundido com dado real.
 
-Pré-requisito: o worker methane-co2-tracker-mqtt-consumer precisa estar
-rodando no Render, configurado com os mesmos DB_*/MQTT_* deste .env local
-— senão a mensagem cai no broker e ninguém do lado do backend está
-inscrito nela.
+Pré-requisito: o serviço web methane-co2-tracker-api precisa estar rodando
+no Render (o consumer MQTT roda como thread em background dentro do
+próprio processo do Uvicorn), configurado com os mesmos DB_*/MQTT_* deste
+.env local — senão a mensagem cai no broker e ninguém do lado do backend
+está inscrito nela.
 
 Roda: python backend/scripts/smoke_publish_ch4.py
 """
