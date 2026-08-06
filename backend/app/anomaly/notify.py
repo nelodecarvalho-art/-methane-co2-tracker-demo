@@ -1,10 +1,9 @@
 import logging
-import smtplib
-from email.message import EmailMessage
 
 import httpx
 
 from app.db.session import settings
+from app.email_sender import send_email
 from app.models.orm import Reading
 
 logger = logging.getLogger(__name__)
@@ -31,18 +30,7 @@ def _body(reading: Reading) -> str:
 
 
 def send_email_anomaly(reading: Reading) -> None:
-    msg = EmailMessage()
-    msg["Subject"] = _subject(reading)
-    msg["From"] = settings.alert_email_from
-    msg["To"] = settings.alert_email_to
-    msg.set_content(_body(reading))
-
-    with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as smtp:
-        if settings.smtp_use_tls:
-            smtp.starttls()
-        if settings.smtp_user:
-            smtp.login(settings.smtp_user, settings.smtp_password)
-        smtp.send_message(msg)
+    send_email(_subject(reading), _body(reading))
 
 
 def send_webhook_anomaly(reading: Reading) -> bool:

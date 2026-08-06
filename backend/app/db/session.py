@@ -34,6 +34,14 @@ class Settings(BaseSettings):
     smtp_use_tls: bool = False
     alert_email_from: str = "alerts@methane-co2-tracker.local"
     alert_email_to: str = "oncall@methane-co2-tracker.local"
+
+    # Provedores de nuvem (Render incluso) costumam bloquear saída na porta
+    # 587 por padrão anti-spam — SMTP puro trava em timeout de conexão TCP,
+    # nunca chega a negociar. Quando True, usa a API HTTP do Resend
+    # (porta 443) em vez de smtplib. `smtp_password` é reaproveitado como
+    # API key do Resend (é o mesmo valor usado como senha SMTP na
+    # integração deles). Default False não afeta o Mailpit local.
+    use_resend_http_api: bool = False
     alert_webhook_url: str = ""
 
     # Isolation Forest por sensor+gás, treinado sob demanda a cada leitura

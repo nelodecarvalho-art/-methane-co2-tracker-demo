@@ -23,6 +23,8 @@ envVarGroups:
         value: 587
       - key: SMTP_USE_TLS
         value: true
+      - key: USE_RESEND_HTTP_API
+        value: true
       - key: ALERT_EMAIL_FROM
         value: onboarding@resend.dev
       - key: ANOMALY_MIN_HISTORY

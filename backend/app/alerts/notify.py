@@ -1,10 +1,9 @@
 import logging
-import smtplib
-from email.message import EmailMessage
 
 import httpx
 
 from app.db.session import settings
+from app.email_sender import send_email
 from app.models.orm import Alert
 
 logger = logging.getLogger(__name__)
@@ -24,18 +23,7 @@ def _body(alert: Alert) -> str:
 
 
 def send_email_alert(alert: Alert) -> None:
-    msg = EmailMessage()
-    msg["Subject"] = _subject(alert)
-    msg["From"] = settings.alert_email_from
-    msg["To"] = settings.alert_email_to
-    msg.set_content(_body(alert))
-
-    with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as smtp:
-        if settings.smtp_use_tls:
-            smtp.starttls()
-        if settings.smtp_user:
-            smtp.login(settings.smtp_user, settings.smtp_password)
-        smtp.send_message(msg)
+    send_email(_subject(alert), _body(alert))
 
 
 def send_webhook_alert(alert: Alert) -> bool:
