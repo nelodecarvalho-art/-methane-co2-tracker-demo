@@ -59,6 +59,7 @@ class User(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     email = Column(String, nullable=False, unique=True)
     password_hash = Column(String, nullable=False)
+    role = Column(String, nullable=False, default="viewer")
     created_at = Column(
         DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
     )

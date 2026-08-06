@@ -40,3 +40,18 @@ def require_user(
         raise unauthorized
 
     return user
+
+
+def require_admin(user: User = Depends(require_user)) -> User:
+    """Gate para rotas de escrita/administrativas. Hoje nenhuma rota usa
+    isso ainda (a API inteira é somente leitura) — existe como guarda
+    pronta pra qualquer endpoint de mutação futuro (criar/editar sensor,
+    mudar threshold etc.) já nascer restrito a admin, sem depender de
+    alguém lembrar de adicionar o gate na hora.
+    """
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Ação restrita a administradores",
+        )
+    return user

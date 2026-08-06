@@ -23,7 +23,7 @@ from app.db.session import SessionLocal  # noqa: E402
 from app.models.orm import User  # noqa: E402
 
 
-def create_user(email: str, password: str) -> None:
+def create_user(email: str, password: str, role: str) -> None:
     db = SessionLocal()
     try:
         existing = db.query(User).filter(User.email == email).one_or_none()
@@ -31,10 +31,10 @@ def create_user(email: str, password: str) -> None:
             print(f"ERRO: já existe um usuário com o e-mail {email}")
             sys.exit(1)
 
-        user = User(email=email, password_hash=hash_password(password))
+        user = User(email=email, password_hash=hash_password(password), role=role)
         db.add(user)
         db.commit()
-        print(f"OK: usuário criado (id={user.id}, email={user.email})")
+        print(f"OK: usuário criado (id={user.id}, email={user.email}, role={user.role})")
     finally:
         db.close()
 
@@ -42,6 +42,7 @@ def create_user(email: str, password: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Cria um usuário para login na API/dashboard")
     parser.add_argument("--email", required=True)
+    parser.add_argument("--role", choices=["admin", "viewer"], default="admin")
     args = parser.parse_args()
 
     password = getpass.getpass("Senha: ")
@@ -54,7 +55,7 @@ def main() -> None:
         print("ERRO: senha precisa ter pelo menos 8 caracteres")
         sys.exit(1)
 
-    create_user(args.email, password)
+    create_user(args.email, password, args.role)
 
 
 if __name__ == "__main__":
