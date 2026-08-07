@@ -17,6 +17,10 @@ envVarGroups:
         value: HS256
       - key: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
         value: 480
+      - key: DEMO_ACCOUNT_EMAIL
+        value: demo@nelotech.com
+      - key: DEMO_LOGIN_EXPIRE_MINUTES
+        value: 60
       - key: SMTP_HOST
         value: smtp.resend.com
       - key: SMTP_PORT

@@ -1,15 +1,17 @@
 import { FormEvent, useState } from "react";
-import { API_BASE_URL, ApiError, login } from "../services/api";
+import { API_BASE_URL, ApiError, demoLogin, login } from "../services/api";
 
 interface LoginFormProps {
   onSubmit: (token: string) => void;
 }
 
 // Só true no build da demo pública (VITE_DEMO_MODE=true), nunca numa
-// instalação real de cliente — ver frontend/.env.example.
+// instalação real de cliente — ver frontend/.env.example. Não expõe mais
+// credencial nenhuma aqui: o botão "Entrar como Visitante" chama
+// /auth/demo-login no backend, que emite o token sem senha nenhuma
+// trafegando (e sem existir se DEMO_ACCOUNT_EMAIL não estiver configurado
+// no backend).
 const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
-const DEMO_EMAIL = "demo@nelotech.com";
-const DEMO_PASSWORD = "MethaneDemo2026!";
 
 export function LoginForm({ onSubmit }: LoginFormProps) {
   const [email, setEmail] = useState("");
@@ -35,15 +37,25 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
     }
   }
 
+  async function handleDemoLogin() {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await demoLogin();
+      onSubmit(result.access_token);
+    } catch {
+      setError("Não foi possível entrar como visitante agora.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <form className="login-form" onSubmit={handleSubmit}>
       <h1>Methane &amp; CO2 Tracker</h1>
       <p>Entre com seu e-mail e senha para acessar o dashboard.</p>
       {DEMO_MODE && (
-        <p className="login-form__demo-hint">
-          Esta é uma demonstração pública com dados fictícios. Use{" "}
-          <code>{DEMO_EMAIL}</code> / <code>{DEMO_PASSWORD}</code> para explorar.
-        </p>
+        <p className="login-form__demo-hint">Esta é uma demonstração pública com dados fictícios.</p>
       )}
       <input
         type="email"
@@ -63,6 +75,11 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
       <button type="submit" disabled={loading}>
         {loading ? "Entrando..." : "Entrar"}
       </button>
+      {DEMO_MODE && (
+        <button type="button" onClick={handleDemoLogin} disabled={loading} className="login-form__demo-button">
+          Entrar como Visitante
+        </button>
+      )}
       {error && <p className="error-banner">{error}</p>}
       <p className="login-form__hint">API: {API_BASE_URL}</p>
     </form>

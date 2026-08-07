@@ -27,6 +27,14 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 480
 
+    # Login sem senha pra conta de demonstração pública (POST
+    # /auth/demo-login). Vazio = endpoint desligado (404) — é assim que uma
+    # instalação de cliente real deve ficar, nunca com essa porta aberta.
+    # O endpoint só emite token pra essa conta se ela também tiver
+    # role="viewer" no banco (checado no router, não só aqui).
+    demo_account_email: str = ""
+    demo_login_expire_minutes: int = 60
+
     smtp_host: str = "localhost"
     smtp_port: int = 1025
     smtp_user: str = ""

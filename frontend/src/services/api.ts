@@ -30,6 +30,7 @@ export interface LoginResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
+  role: string;
 }
 
 export class ApiError extends Error {
@@ -56,6 +57,15 @@ export async function login(
   });
   if (!response.ok) {
     throw new ApiError(response.status, `/auth/login -> HTTP ${response.status}`);
+  }
+  return (await response.json()) as LoginResponse;
+}
+
+export async function demoLogin(apiBaseUrl: string = API_BASE_URL): Promise<LoginResponse> {
+  const url = new URL("/auth/demo-login", apiBaseUrl);
+  const response = await fetch(url, { method: "POST" });
+  if (!response.ok) {
+    throw new ApiError(response.status, `/auth/demo-login -> HTTP ${response.status}`);
   }
   return (await response.json()) as LoginResponse;
 }

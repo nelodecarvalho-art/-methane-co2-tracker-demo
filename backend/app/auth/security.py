@@ -20,9 +20,12 @@ def verify_password(password: str, password_hash: str | None) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), hash_to_check)
 
 
-def create_access_token(user_id: int) -> tuple[str, int]:
-    """Retorna (token, expires_in_seconds)."""
-    expire_delta = timedelta(minutes=settings.jwt_access_token_expire_minutes)
+def create_access_token(user_id: int, expire_minutes: int | None = None) -> tuple[str, int]:
+    """Retorna (token, expires_in_seconds). `expire_minutes` sobrescreve o
+    default (usado pelo login de demo, que expira mais rápido que um login
+    normal)."""
+    minutes = expire_minutes if expire_minutes is not None else settings.jwt_access_token_expire_minutes
+    expire_delta = timedelta(minutes=minutes)
     expires_at = datetime.now(timezone.utc) + expire_delta
     payload = {"sub": str(user_id), "exp": expires_at}
     token = jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
