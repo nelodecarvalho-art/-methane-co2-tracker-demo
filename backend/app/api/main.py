@@ -8,7 +8,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from app.api.rate_limit import limiter
-from app.api.routers import alerts, auth, devices, health, readings, reports
+from app.api.routers import admin, alerts, auth, devices, health, readings, reports
 from app.db.session import settings
 from app.ingestion.mqtt_consumer import run as run_mqtt_consumer
 
@@ -57,3 +57,4 @@ app.include_router(readings.router)
 app.include_router(devices.router)
 app.include_router(alerts.router)
 app.include_router(reports.router)
+app.include_router(admin.router)

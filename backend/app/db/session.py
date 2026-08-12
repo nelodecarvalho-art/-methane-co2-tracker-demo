@@ -35,6 +35,12 @@ class Settings(BaseSettings):
     demo_account_email: str = ""
     demo_login_expire_minutes: int = 60
 
+    # Segredo compartilhado (não é JWT de usuário) pra uma tarefa agendada
+    # externa disparar POST /admin/reseed-demo sem precisar de login/senha
+    # nem lidar com expiração de token. Vazio = endpoint desligado (404) —
+    # mesma convenção de "porta fechada por padrão" do demo login.
+    admin_task_secret: str = ""
+
     smtp_host: str = "localhost"
     smtp_port: int = 1025
     smtp_user: str = ""

@@ -138,29 +138,43 @@ def _seed_sensor_readings(db, spec: dict, now: datetime) -> None:
         db.commit()
 
 
-def main() -> None:
-    db = SessionLocal()
+def reseed(db) -> dict:
+    """Limpa e recria os dados de demo (idempotente). Compartilhado pelo
+    script standalone (rodado manualmente) e por `POST /admin/reseed-demo`
+    (chamado por uma tarefa agendada externa) — mesma lógica, uma única
+    fonte de verdade.
+    """
     random.seed(42)  # dados reprodutíveis entre execuções
     now = datetime.now(timezone.utc)
 
-    try:
-        _cleanup(db)
-        for spec in SENSORS:
-            _seed_sensor_readings(db, spec, now)
+    _cleanup(db)
+    for spec in SENSORS:
+        _seed_sensor_readings(db, spec, now)
 
-        total_readings = (
-            db.query(Reading)
-            .filter(Reading.sensor_id.in_([s["sensor_id"] for s in SENSORS]))
-            .count()
-        )
-        total_alerts = (
-            db.query(Alert)
-            .filter(Alert.sensor_id.in_([s["sensor_id"] for s in SENSORS]))
-            .count()
-        )
+    total_readings = (
+        db.query(Reading)
+        .filter(Reading.sensor_id.in_([s["sensor_id"] for s in SENSORS]))
+        .count()
+    )
+    total_alerts = (
+        db.query(Alert)
+        .filter(Alert.sensor_id.in_([s["sensor_id"] for s in SENSORS]))
+        .count()
+    )
+    return {
+        "sensors": len(SENSORS),
+        "readings": total_readings,
+        "alerts": total_alerts,
+    }
+
+
+def main() -> None:
+    db = SessionLocal()
+    try:
+        result = reseed(db)
         print(
-            f"OK: {len(SENSORS)} sensores fictícios, {total_readings} leituras "
-            f"sintéticas e {total_alerts} alertas de exemplo seedados"
+            f"OK: {result['sensors']} sensores fictícios, {result['readings']} "
+            f"leituras sintéticas e {result['alerts']} alertas de exemplo seedados"
         )
     finally:
         db.close()

@@ -82,3 +82,5 @@ services:
         sync: false
       - key: CORS_ALLOWED_ORIGINS
         sync: false
+      - key: ADMIN_TASK_SECRET
+        sync: false
